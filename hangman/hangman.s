@@ -1,9 +1,9 @@
     .rodata:
 input_words:   .asciz "words.txt"
 read_mode:     .asciz "r"
-format_index:  .asciz "Index: "
 format_letter: .asciz "Letter: "
 word_message:  .asciz "Word is: \n"
+win_message:   .asciz "You win.\n"
 format_int:    .asciz "%d"
 format_char:   .asciz " %c"
 format_char2:  .asciz "%c "
@@ -26,7 +26,7 @@ main:
     # keep track of the current line
     movq $0, -16(%rbp)
     # the target line (XXX pick a random line)
-    movq $31, -24(%rbp)
+    movq $33, -24(%rbp)
     jmp .Lread_line
     leaveq
     ret
@@ -75,6 +75,7 @@ main:
     mov -174(%rbp), %r12
     # print the word again, but hide the middle chars
     mov $0, %r13
+    mov $0, %r14b
 1:
     cmp %r12, %r13
     jnl .Ldone
@@ -84,6 +85,7 @@ main:
     je .Lprint_hidden
     jmp .Lprint_letter
 .Lprint_hidden:
+    mov $1, %r14b
     xor %rax, %rax
     lea format_char2(%rip), %rdi
     mov hidden_char(%rip), %rsi
@@ -101,29 +103,38 @@ main:
 .Ldone:
     lea newline_str(%rip), %rdi
     call printf
+    test %r14b, %r14b
+    je .Lwin
     jmp .Lread_choice
 .Lread_choice:
-    lea format_index(%rip), %rdi
-    call printf
-    lea format_int(%rip), %rdi
+    # XXX free 8-byte integer
     lea -164(%rbp), %rsi
-    xor %rax, %rax
-    call scanf
     lea format_letter(%rip), %rdi
     call printf
     lea format_char(%rip), %rdi
     lea -166(%rbp), %rsi
     xor %rax, %rax
     callq scanf
-    # compare the choice with the actual char
-    mov -164(%rbp), %r13
-    mov -152(%rbp, %r13, 1), %rax
     mov -166(%rbp), %rbx
+    # compare the choice with the actual char
+    mov -174(%rbp), %r12
+    mov $0, %r13
+1:
+    cmp %r12, %r13
+    jnl 3f
+    mov -152(%rbp, %r13, 1), %rax
     cmpb %al, %bl
-    jne .Lprint_word
-    # mark the letter as visible
-    # XXX mark all positions that contain this letter as visible
+    jne 2f
     mov -182(%rbp), %rax
-    mov -164(%rbp), %r13
     movb $1, (%rax, %r13, 1)
+2:
+    add $1, %r13
+    jmp 1b
+3:
     jmp .Lprint_word
+.Lwin:
+    lea win_message(%rip), %rdi
+    call printf
+    leaveq
+    mov $0, %rax
+    ret
