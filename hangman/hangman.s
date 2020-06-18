@@ -2,12 +2,13 @@
 input_words:   .asciz "words.txt"
 read_mode:     .asciz "r"
 format_letter: .asciz "Letter: "
-word_message:  .asciz "Word is: \n"
+word_message:  .asciz "The word is: \n"
 win_message:   .asciz "You win.\n"
 format_int:    .asciz "%d"
 format_char:   .asciz " %c"
 format_char2:  .asciz "%c "
 newline_str:   .asciz "\n"
+clear_screen:  .asciz "\033[2J\033[H"
 newline_char:  .byte '\n'
 hidden_char:   .byte '_'
     .globl main
@@ -68,6 +69,8 @@ main:
     movb $1, (%rax, %rcx, 1)
     # print the randomly selected word
 .Lprint_word:
+    lea clear_screen(%rip), %rdi
+    call puts
     xor %rax, %rax
     lea word_message(%rip), %rdi
     call printf
