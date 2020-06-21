@@ -1,4 +1,4 @@
-    .rodata:
+    .section .rodata
 input_words:   .asciz "words.txt"
 read_mode:     .asciz "r"
 format_letter: .asciz "Letter: "
@@ -11,9 +11,8 @@ newline_str:   .asciz "\n"
 clear_screen:  .asciz "\033[2J\033[H"
 newline_char:  .byte '\n'
 hidden_char:   .byte '_'
-    .globl main
+    .global main
     .text
-
 main:
     push %rbp
     mov %rsp, %rbp
