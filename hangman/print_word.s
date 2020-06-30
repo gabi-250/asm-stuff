@@ -6,6 +6,7 @@ newline_str:  .asciz "\n"
 hidden_char:  .byte '_'
     .text
     .global print_word
+
 # Print the specified string, replacing its 'hidden' letters with underscores.
 #
 # Arguments:
@@ -50,7 +51,8 @@ print_word:
 .Lprint_letter:
     xor %rax, %rax
     lea format_char2(%rip), %rdi
-    mov -8(%rbp, %r13, 1), %rsi
+    mov -8(%rbp), %rax
+    movb (%rax, %r13, 1), %sil
     call printf
 2:
     add $1, %r13

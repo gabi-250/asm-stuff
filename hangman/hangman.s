@@ -18,9 +18,7 @@ main:
     lea -128(%rbp), %rsi
     # the maximum line length
     mov $128, %rdx
-    # the number of the line to read (XXX pick a random number)
-    mov $33, %rcx
-    call read_line
+    call read_rand_line
     # keep track of the visible letters
     lea -128(%rbp), %rdi
     call strlen
@@ -37,7 +35,7 @@ main:
     # print the randomly selected word
 .Lprint_word:
     # the word to print
-    mov -128(%rbp), %rdi
+    lea -128(%rbp), %rdi
     # the word length
     mov -136(%rbp), %rsi
     # the visible letters
