@@ -5,7 +5,7 @@ BOOT := bootloader
 all: clean $(BOOT).bin
 
 $(BOOT).bin: $(BOOT).o
-	$(LD) -Ttext=0x7c00 -e _boot --oformat=binary -o $@ $<
+	$(LD) -T linker.ld --oformat=binary -o $@ $<
 
 qemu: $(BOOT).bin
 	qemu-system-x86_64 -drive format=raw,file=./$<

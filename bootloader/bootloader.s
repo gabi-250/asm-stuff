@@ -53,12 +53,6 @@ _boot:
     # y-coordinate
     mov $0, %dx
     int $0x10
-    # Loop forever
-loop:
-    jmp .
+    hlt
 msg:     .ascii "hello"
 msg_len: .word (. - msg)
-    # Pad the file with zeroes to make sure its size up to this point is 510b.
-    .fill 510 - (. - _boot), 1, 0
-    # The last word is the magic word.
-    .byte 0x55, 0xAA
